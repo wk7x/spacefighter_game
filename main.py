@@ -6,6 +6,7 @@ from asteroid import Asteroid
 from asteroidfield import AsteroidField
 
 def main():
+    # initialize pygame
     pygame.init()
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -18,17 +19,19 @@ def main():
     # add Player class to both groups
     Player.containers = (updatable, drawable)
     Asteroid.containers = (updatable, drawable, asteroids)
+    AsteroidField.containers = updatable
     # create the player in the center of the screen
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    asteroid_field = AsteroidField()
 
     print("Starting asteroids!")
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
     
     #start game loop
-    game_loop(screen, clock, updatable, drawable, asteroids)
+    game_loop(screen, clock, player, updatable, drawable, asteroids)
 
-def game_loop(screen, clock, updatable, drawable, asteroids):
+def game_loop(screen, clock, player, updatable, drawable, asteroids):
     dt = 0
     #check for game exit event
     while True:
@@ -39,9 +42,17 @@ def game_loop(screen, clock, updatable, drawable, asteroids):
         # check for key presses
         for _ in updatable:
             _.update(dt)
-        # redraw the screen and player
+
+        # check for collisions
+        for _ in asteroids:
+            if player.collision_detector(_):
+                print("Game over!")
+                pygame.quit()
+                sys.exit()
+
+        # redraw the screen
         screen.fill((0, 0, 0))
-        
+        # draw the drawable objects
         for _ in drawable:
             _.draw(screen)
         # update the display
