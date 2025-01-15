@@ -2,6 +2,8 @@ import pygame
 import sys
 from constants import *
 from player import Player
+from asteroid import Asteroid
+from asteroidfield import AsteroidField
 
 def main():
     pygame.init()
@@ -11,10 +13,11 @@ def main():
     # create groups
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
+    asteroids = pygame.sprite.Group()
 
     # add Player class to both groups
     Player.containers = (updatable, drawable)
-
+    Asteroid.containers = (updatable, drawable, asteroids)
     # create the player in the center of the screen
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
@@ -23,9 +26,9 @@ def main():
     print(f"Screen height: {SCREEN_HEIGHT}")
     
     #start game loop
-    game_loop(screen, clock, updatable, drawable)
+    game_loop(screen, clock, updatable, drawable, asteroids)
 
-def game_loop(screen, clock, updatable, drawable):
+def game_loop(screen, clock, updatable, drawable, asteroids):
     dt = 0
     #check for game exit event
     while True:
