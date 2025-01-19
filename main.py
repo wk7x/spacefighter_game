@@ -32,9 +32,9 @@ def main():
     print(f"Screen height: {SCREEN_HEIGHT}")
     
     #start game loop
-    game_loop(screen, clock, player, updatable, drawable, asteroids)
+    game_loop(screen, clock, player, updatable, drawable, asteroids, shots)
 
-def game_loop(screen, clock, player, updatable, drawable, asteroids):
+def game_loop(screen, clock, player, updatable, drawable, asteroids, shots):
     dt = 0
     #check for game exit event
     while True:
@@ -47,12 +47,19 @@ def game_loop(screen, clock, player, updatable, drawable, asteroids):
             _.update(dt)
 
         # check for collisions
-        for _ in asteroids:
-            if player.collision_detector(_):
+        for asteroid in asteroids:
+            if player.collision_detector(asteroid):
                 print("Game over!")
                 pygame.quit()
                 sys.exit()
-
+        
+        # check for collisions between shots and asteroids
+        for shot in shots:
+            for asteroid in asteroids:
+                if shot.collision_detector(asteroid):
+                    asteroid.kill()
+                    shot.kill()
+                    
         # redraw the screen
         screen.fill((0, 0, 0))
         # draw the drawable objects
