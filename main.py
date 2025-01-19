@@ -57,9 +57,9 @@ def game_loop(screen, clock, player, updatable, drawable, asteroids, shots):
         for shot in shots:
             for asteroid in asteroids:
                 if shot.collision_detector(asteroid):
-                    asteroid.kill()
+                    asteroid.split()
                     shot.kill()
-                    
+
         # redraw the screen
         screen.fill((0, 0, 0))
         # draw the drawable objects
