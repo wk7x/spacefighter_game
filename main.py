@@ -5,11 +5,13 @@ from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shots import Shot
+#from powercounter import PowerUpCounter
 
 def main():
     # initialize pygame
     pygame.init()
     clock = pygame.time.Clock()
+    highscore = 0
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     
     # create groups
@@ -23,8 +25,12 @@ def main():
     Asteroid.containers = (updatable, drawable, asteroids)
     AsteroidField.containers = updatable
     Shot.containers = (updatable, shots, drawable)
+    #PowerUpCounter.containers = (updatable, drawable)
+    
     # create the player in the center of the screen
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    #power_up_counter = PowerUpCounter()
+
     asteroid_field = AsteroidField()
 
     print("Starting asteroids!")
@@ -49,9 +55,22 @@ def game_loop(screen, clock, player, updatable, drawable, asteroids, shots):
         # check for collisions
         for asteroid in asteroids:
             if player.collision_detector(asteroid):
-                print("Game over!")
-                pygame.quit()
-                sys.exit()
+                
+                while True:
+                    font = pygame.font.Font(None, 36)
+                    text = font.render("Game over!\nPress Enter to try again or Esc to exit", True, (255, 255, 255))
+                    text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+                    screen.blit(text, text_rect)
+                    # Update display
+                    pygame.display.flip()
+                    for event in pygame.event.get():
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_RETURN:
+                                main()
+                                return
+                            elif event.key == pygame.K_ESCAPE:
+                                pygame.quit()
+                                sys.exit()
         
         # check for collisions between shots and asteroids
         for shot in shots:

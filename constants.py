@@ -1,5 +1,9 @@
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 720
+import pygame
+import screeninfo
+
+display_info = screeninfo.get_monitors()[0]
+SCREEN_WIDTH = display_info.width
+SCREEN_HEIGHT = display_info.height
 
 ASTEROID_MIN_RADIUS = 20
 ASTEROID_KINDS = 3
