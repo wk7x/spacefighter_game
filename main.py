@@ -4,7 +4,7 @@ from constants import *
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
-from shots import Shot
+from shots import Shot, MegaBlast
 from powercounter import PowerUpCounter
 from scorecounter import ScoreCounter
 
@@ -28,15 +28,16 @@ def main():
     Shot.containers = (updatable, shots, drawable)
     PowerUpCounter.containers = (updatable, drawable)
     ScoreCounter.containers = (updatable, drawable)
-    
-    # create the player in the center of the screen
-    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    MegaBlast.containers = (updatable, shots, drawable)
     
     # create the score counter
     score_counter = ScoreCounter()
 
     # create the power up counter
     power_up_counter = PowerUpCounter()
+
+  # create the player in the center of the screen
+    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, power_up_counter)
 
     # Asteroid movement
     asteroid_field = AsteroidField()
@@ -100,10 +101,9 @@ def game_loop(screen, score_counter, power_up_counter, clock, player, updatable,
                 
                 while True:
                     font = pygame.font.Font(None, 36)
-                    text = font.render("Game over! Press [Enter] to try again or [Esc] to exit", True, (255, 255, 255))
+                    text = font.render(f"Game over! Your score was {score_counter.count} Press [Enter] to try again or [Esc] to exit", True, (255, 255, 255))
                     text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
                     screen.blit(text, text_rect)
-                    # Update display
                     pygame.display.flip()
                     for event in pygame.event.get():
                         if event.type == pygame.KEYDOWN:
@@ -119,7 +119,8 @@ def game_loop(screen, score_counter, power_up_counter, clock, player, updatable,
             for asteroid in asteroids:
                 if shot.collision_detector(asteroid):
                     rubble = asteroid.split()
-                    shot.kill()
+                    if not isinstance(shot, MegaBlast): # if the shot is not a mega blast, kill it
+                        shot.kill()
                     if rubble is None:
                         score_counter.addscore()
 
