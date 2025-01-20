@@ -1,4 +1,3 @@
-import pygame
 import screeninfo
 
 display_info = screeninfo.get_monitors()[0]

@@ -5,7 +5,7 @@ from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shots import Shot
-#from powercounter import PowerUpCounter
+from powercounter import PowerUpCounter
 
 def main():
     # initialize pygame
@@ -25,25 +25,62 @@ def main():
     Asteroid.containers = (updatable, drawable, asteroids)
     AsteroidField.containers = updatable
     Shot.containers = (updatable, shots, drawable)
-    #PowerUpCounter.containers = (updatable, drawable)
+    PowerUpCounter.containers = (updatable, drawable)
     
     # create the player in the center of the screen
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-    #power_up_counter = PowerUpCounter()
+    power_up_counter = PowerUpCounter()
 
     asteroid_field = AsteroidField()
-
-    print("Starting asteroids!")
-    print(f"Screen width: {SCREEN_WIDTH}")
-    print(f"Screen height: {SCREEN_HEIGHT}")
     
     #start game loop
-    game_loop(screen, clock, player, updatable, drawable, asteroids, shots)
+    display_start_menu(screen, power_up_counter, clock, player, updatable, drawable, asteroids, shots)   
 
-def game_loop(screen, clock, player, updatable, drawable, asteroids, shots):
+def display_start_menu(screen, power_up_counter, clock, player, updatable, drawable, asteroids, shots):
+    font = pygame.font.Font(None, 36)
+    line1 = "Welcome! Press [Enter] to start or [Esc] to exit."
+    line2 = "Controls: [W] Up, [S] Down, [A] Left, [D] Right, [Space] Shoot, [E] Mega-Blast (Recharges every 15 seconds)"
+    
+    # Calculate y positions
+    y1 = SCREEN_HEIGHT / 2 - 40  # Adjust as needed for spacing
+    y2 = SCREEN_HEIGHT / 2
+
+    #screen.fill((0, 0, 0))  # Clear the screen
+
+    # Render and blit each line with specified colors
+    text1 = font.render(line1, True, (57, 255, 20))  # Neon green
+    text_rect1 = text1.get_rect(center=(SCREEN_WIDTH / 2, y1))
+    screen.blit(text1, text_rect1)
+
+    text2 = font.render(line2, True, (128, 0, 128))  # Purple
+    text_rect2 = text2.get_rect(center=(SCREEN_WIDTH / 2, y2))
+    screen.blit(text2, text_rect2)
+
+    pygame.display.flip()
+
+    # Event handling
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    game_loop(screen, power_up_counter, clock, player, updatable, drawable, asteroids, shots)
+                    return  # Exit the menu and start the game
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+    
+
+def game_loop(screen, power_up_counter, clock, player, updatable, drawable, asteroids, shots):
     dt = 0
+
     #check for game exit event
     while True:
+ 
+        power_up_counter.recharge()
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -58,7 +95,7 @@ def game_loop(screen, clock, player, updatable, drawable, asteroids, shots):
                 
                 while True:
                     font = pygame.font.Font(None, 36)
-                    text = font.render("Game over!\nPress Enter to try again or Esc to exit", True, (255, 255, 255))
+                    text = font.render("Game over! Press [Enter] to try again or [Esc] to exit", True, (255, 255, 255))
                     text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
                     screen.blit(text, text_rect)
                     # Update display
@@ -84,6 +121,8 @@ def game_loop(screen, clock, player, updatable, drawable, asteroids, shots):
         # draw the drawable objects
         for _ in drawable:
             _.draw(screen)
+
+        power_up_counter.render(screen)
         # update the display
         pygame.display.flip()
         # update the delta time
